@@ -126,6 +126,14 @@ module.exports = function(grunt) {
       }
     }
 
+    if (_.isFunction(options.sourceMapURL)) {
+      try {
+        options.sourceMapURL = options.sourceMapURL(destFile);
+      } catch (e) {
+        grunt.fail.warn(wrapError(e, 'Generating sourceMapURL failed.'));
+      }
+    }
+
     if (_.isBoolean(options.sourceMap) && options.sourceMap) {
       options.sourceMap = {
         sourceMapBasepath: options.sourceMapBasepath,
