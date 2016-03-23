@@ -68,6 +68,14 @@ module.exports = function(grunt) {
               if (!sourceMapFilename) {
                 sourceMapFilename = destFile + '.map';
               }
+              if (_.isFunction(sourceMapFilename)) {
+                try {
+                  sourceMapFilename = sourceMapFilename(destFile);
+                } catch (e) {
+                  sourceMapFilename = destFile + '.map';
+                  grunt.fail.warn(wrapError(e, 'Generating sourceMapFilename failed.'));
+                }
+              }
               grunt.file.write(sourceMapFilename, output.map);
               grunt.verbose.writeln('File ' + chalk.cyan(sourceMapFilename) + ' created.');
               tally.maps++;
@@ -116,6 +124,12 @@ module.exports = function(grunt) {
 
     if (options.sourceMap && !options.sourceMapFileInline && !options.sourceMapFilename) {
       options.sourceMapFilename = destFile + '.map';
+    } else if (options.sourceMap && !options.sourceMapFileInline && _.isFunction(options.sourceMapFilename)) {
+      try {
+        options.sourceMapFilename = options.sourceMapFilename(destFile);
+      } catch (e) {
+        grunt.fail.warn(wrapError(e, 'Generating sourceMapFilename failed.'));
+      }
     }
 
     if (_.isFunction(options.sourceMapBasepath)) {
